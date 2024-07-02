@@ -117,14 +117,3 @@ class Order:
 store = Store()
 warehouse = Warehouse()
 basket = Basket()
-o = Order('Belly', 12, 1000)
-David = Client('David')
-
-milk = Product('milk', 2, 15)
-meat = Product('meat', 1, 50)
-bread = Product('bread', 30, 10)
-
-store.add_balance(5000)
-store.display_balance()
-store.display_orders()
-David.view_orders()
