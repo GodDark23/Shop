@@ -1,30 +1,30 @@
-# Знаю что нельзя комментировать всё подряд, но я хочу!
 import file
 import shop
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
+
 # Создаем основное окно
 root = Tk()
 root.title("Online Store")
-root.geometry("600x500")
-root.configure(bg="#f0f0f0")
+root.geometry("800x600")
+root.configure(bg="#ffffff")
 
 # Стилизация ttk
 style = ttk.Style()
 style.theme_use("clam")
-style.configure("TButton", font=("Helvetica", 12, "bold"), foreground="#ffffff", background="#5f9ea0", width=20)
+style.configure("TButton", font=("Helvetica", 12, "bold"), foreground="#ffffff", background="#5f9ea0", padding=10)
 style.map("TButton", background=[("active", "#4682b4")])  # Цвет при наведении
-style.configure("TLabel", font=("Helvetica", 10), background="#e6e6e6")
-style.configure("TFrame", background="#e6e6e6")
-style.configure("TEntry", font=("Helvetica", 10))
+style.configure("TLabel", font=("Helvetica", 12), background="#ffffff")
+style.configure("TFrame", background="#ffffff")
+style.configure("TEntry", font=("Helvetica", 12))
 
 
 def owner_window():
     admin_screen = Toplevel(root)
     admin_screen.title("Owner Window")
-    admin_screen.geometry("500x400")
-    admin_screen.configure(bg="#e6e6e6")
+    admin_screen.geometry("600x500")
+    admin_screen.configure(bg="#ffffff")
 
     def show_balance():
         balance = shop.store.display_balance()
@@ -37,7 +37,7 @@ def owner_window():
         balance_screen = Toplevel(admin_screen)
         balance_screen.title("Increase Balance")
         balance_screen.geometry("300x200")
-        balance_screen.configure(bg="#e6e6e6")
+        balance_screen.configure(bg="#ffffff")
 
         amount_label = ttk.Label(balance_screen, text="Enter amount:")
         amount_label.pack(pady=5)
@@ -65,7 +65,7 @@ def owner_window():
         restock_screen = Toplevel(admin_screen)
         restock_screen.title("Restock")
         restock_screen.geometry("400x300")
-        restock_screen.configure(bg="#e6e6e6")
+        restock_screen.configure(bg="#ffffff")
 
         product_name_label = ttk.Label(restock_screen, text="Enter name product:")
         product_name_label.pack(pady=10)
@@ -104,8 +104,8 @@ def owner_window():
     def display_warehouse():
         warehouse_screen = Toplevel(admin_screen)
         warehouse_screen.title("Warehouse")
-        warehouse_screen.geometry("600x800")
-        warehouse_screen.configure(bg="#e6e6e6")
+        warehouse_screen.geometry("700x500")
+        warehouse_screen.configure(bg="#ffffff")
 
         products = shop.warehouse.product_list
 
@@ -144,14 +144,14 @@ def owner_window():
 def user_window():
     user_screen = Toplevel(root)
     user_screen.title("User Screen")
-    user_screen.geometry("500x400")
-    user_screen.configure(bg="#e6e6e6")
+    user_screen.geometry("700x500")
+    user_screen.configure(bg="#ffffff")
 
     def display_warehouse_client():
         warehouse_screen = Toplevel(user_screen)
         warehouse_screen.title("Warehouse")
-        warehouse_screen.geometry("700x800")
-        warehouse_screen.configure(bg="#e6e6e6")
+        warehouse_screen.geometry("700x500")
+        warehouse_screen.configure(bg="#ffffff")
 
         products = shop.warehouse.product_list
 
@@ -159,32 +159,33 @@ def user_window():
         header_frame.pack(pady=10)
 
         header_name = Label(header_frame, text="Product Name", width=20, borderwidth=1, relief="solid", bg="#d3d3d3", font=("Helvetica", 10, "bold"))
-        header_name.pack(side=LEFT, padx=10)
+        header_name.grid(row=0, column=0, padx=5, pady=5)
 
         header_quantity = Label(header_frame, text="Quantity", width=20, borderwidth=1, relief="solid", bg="#d3d3d3", font=("Helvetica", 10, "bold"))
-        header_quantity.pack(side=LEFT, padx=10)
+        header_quantity.grid(row=0, column=1, padx=5, pady=5)
 
         header_price = Label(header_frame, text="Price", width=20, borderwidth=1, relief="solid", bg="#d3d3d3", font=("Helvetica", 10, "bold"))
-        header_price.pack(side=LEFT, padx=10)
+        header_price.grid(row=0, column=2, padx=5, pady=5)
+
+        header_action = Label(header_frame, text="      ", width=10, borderwidth=0, relief="solid", bg="#ffffff", font=("Helvetica", 10, "bold"))
+        header_action.grid(row=0, column=3, padx=5, pady=5)
 
         products_frame = ttk.Frame(warehouse_screen)
         products_frame.pack(pady=10)
 
-        for product in products:
-            product_frame = ttk.Frame(products_frame)
-            product_frame.pack(fill=X, pady=5)
+        for i, product in enumerate(products):
+            name_label = Label(products_frame, text=product.name_product, width=20, height=2,  borderwidth=1, relief="solid", bg="#f5f5f5", font=("Helvetica", 10))
+            name_label.grid(row=i+1, column=0, padx=5, pady=5)
 
-            name_label = Label(product_frame, text=product.name_product, width=20, borderwidth=1, relief="solid", bg="#f5f5f5", font=("Helvetica", 10))
-            name_label.pack(side=LEFT, padx=10)
+            quantity_label = Label(products_frame, text=product.quantity, width=20, height=2, borderwidth=1, relief="solid", bg="#f5f5f5", font=("Helvetica", 10))
+            quantity_label.grid(row=i+1, column=1, padx=5, pady=5)
 
-            quantity_label = Label(product_frame, text=product.quantity, width=20, borderwidth=1, relief="solid", bg="#f5f5f5", font=("Helvetica", 10))
-            quantity_label.pack(side=LEFT, padx=10)
+            price_label = Label(products_frame, text=product.price, width=20, height=2, borderwidth=1, relief="solid", bg="#f5f5f5", font=("Helvetica", 10))
+            price_label.grid(row=i+1, column=2, padx=5, pady=5)
 
-            price_label = Label(product_frame, text=product.price, width=20, borderwidth=1, relief="solid", bg="#f5f5f5", font=("Helvetica", 10))
-            price_label.pack(side=LEFT, padx=10)
-
-            buy_button = ttk.Button(product_frame, text='BUY', width=5)
-            buy_button.pack(side=RIGHT, padx=15)
+            buy_button = ttk.Button(products_frame, text='BUY', width=6,
+                                    command=lambda p=product: shop.basket.add_product(p.name_product, 1))
+            buy_button.grid(row=i + 1, column=3, padx=5, pady=5)
 
     btn_goods = ttk.Button(user_screen, text="Goods", command=display_warehouse_client)
     btn_goods.pack(pady=30)

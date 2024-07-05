@@ -53,11 +53,17 @@ class Basket:
     def __init__(self):
         self.basket_list = []
 
+    def calculate_price(self):
+        price = sum(product.price * quantity for product, quantity in self.basket_list)
+        return price
+
     def add_product(self, product_name, quantity):
         product = warehouse.find_product(product_name)
         if product and product.quantity >= quantity:
             self.basket_list.append((product, quantity))
             product.quantity -= quantity
+            total_price = self.calculate_price()
+            print(f'Added {quantity} of {product_name} to basket. Total price: {total_price}')
         else:
             print(f'Insufficient quantity of {product_name} in warehouse')
 
