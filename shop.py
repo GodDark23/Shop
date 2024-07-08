@@ -35,6 +35,22 @@ class Warehouse:
     def add_product(self, product):
         self.product_list.append(product)
 
+    def get_quantity(self, product_name):
+        for product in self.product_list:
+            if product.name_product == product_name:
+                return product.quantity
+        return 0  # Возвращаем 0, если продукт не найден
+
+    def reduce_quantity(self, product_name, quantity):
+        for product in self.product_list:
+            if product.name_product == product_name:
+                if product.quantity >= quantity:
+                    product.quantity -= quantity
+                    return True
+                else:
+                    return False
+        return False
+
     def delete_product(self, product):
         if product in self.product_list:
             self.product_list.remove(product)
@@ -53,21 +69,27 @@ class Basket:
     def __init__(self):
         self.basket_list = []
 
-    def calculate_price(self):
-        price = sum(product.price * quantity for product, quantity in self.basket_list)
-        return price
+    def calculate_price(self):  # Не работает нужно починить. Скорее всего ошибка в распаковке
+        pass
 
-    def add_product(self, product_name, quantity):
-        product = warehouse.find_product(product_name)
-        if product and product.quantity >= quantity:
-            self.basket_list.append((product, quantity))
-            product.quantity -= quantity
-            total_price = self.calculate_price()
-            print(f'Added {quantity} of {product_name} to basket. Total price: {total_price}')
+    def add_product(self, product): # возможно ли доработать?
+        if warehouse.get_quantity(product.name_product) > 0:
+            if warehouse.reduce_quantity(product.name_product, 1):
+                # Проверка, есть ли уже этот продукт в корзине
+                for item in self.basket_list:
+                    if item.name_product == product.name_product:
+                        item.quantity += 1
+                        print(f'Added {item.quantity} of {item.name_product} to basket. Total price: {item.quantity * item.price}')
+                        return
+                # Если продукта еще нет в корзине, добавляем его
+                self.basket_list.append(Product(product.name_product, 1, product.price))
+                print(f'Added {product.name_product} to basket. Total price: {product.price}')
+            else:
+                print(f'Insufficient quantity of {product.name_product} in warehouse')
         else:
-            print(f'Insufficient quantity of {product_name} in warehouse')
+            print(f'Insufficient quantity of {product.name_product} in warehouse')
 
-    def delete_product(self, product_name):
+    def delete_product(self, product_name):  # скорее всего косяк
         for index, (product, quantity) in enumerate(self.basket_list):
             if product.name_product == product_name:
                 product.quantity += quantity
@@ -86,10 +108,6 @@ class Basket:
 
     def clear_basket(self):
         self.basket_list = []
-
-    def calculate_price(self):
-        price = sum(product.price * quantity for product, quantity in self.basket_list)  # честно говорю - спиздил
-        return price
 
     def add_basket_to_order(self, client_name):
         order = Order(client_name, self.basket_list, self.calculate_price())
