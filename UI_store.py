@@ -1,5 +1,6 @@
 import file
 import shop
+import sql
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
@@ -9,6 +10,7 @@ root = Tk()
 root.title("Online Store")
 root.geometry("800x600")
 root.configure(bg="#ffffff")
+root.resizable(False, False)
 
 # Стилизация ttk
 style = ttk.Style()
@@ -26,6 +28,8 @@ def owner_window():
     admin_screen.title("Owner Window")
     admin_screen.geometry("600x500")
     admin_screen.configure(bg="#ffffff")
+    admin_screen.resizable(False, False)
+    admin_screen.grab_set()
 
     def show_balance():
         balance = shop.store.display_balance()
@@ -39,6 +43,7 @@ def owner_window():
         balance_screen.title("Increase Balance")
         balance_screen.geometry("300x200")
         balance_screen.configure(bg="#ffffff")
+        balance_screen.resizable(False, False)
 
         amount_label = ttk.Label(balance_screen, text="Enter amount:")
         amount_label.pack(pady=5)
@@ -67,6 +72,7 @@ def owner_window():
         restock_screen.title("Restock")
         restock_screen.geometry("400x300")
         restock_screen.configure(bg="#ffffff")
+        restock_screen.resizable(False, False)
 
         product_name_label = ttk.Label(restock_screen, text="Enter name product:")
         product_name_label.pack(pady=10)
@@ -91,8 +97,7 @@ def owner_window():
             quantity = int(quantity_entry.get())
             price = int(price_entry.get())
 
-            new_product = shop.Product(name_product, quantity, price)
-            shop.warehouse.add_product(new_product)
+            sql.insert_product_warehouse(name_product, quantity, price)
             messagebox.showinfo("Success!", f"Product {name_product} added to warehouse")
             restock_screen.destroy()
 
@@ -107,8 +112,9 @@ def owner_window():
         warehouse_screen.title("Warehouse")
         warehouse_screen.geometry("700x500")
         warehouse_screen.configure(bg="#ffffff")
+        warehouse_screen.resizable(False, False)
 
-        products = shop.warehouse.product_list
+        products = sql.get_product_from_warehouse()
 
         header_frame = ttk.Frame(warehouse_screen)
         header_frame.pack(pady=10)
@@ -132,16 +138,16 @@ def owner_window():
             product_frame = ttk.Frame(products_frame)
             product_frame.pack(fill=X, pady=5)
 
-            name_label = Label(product_frame, text=product.name_product, width=20, borderwidth=1, relief="solid",
-                               bg="#f5f5f5", font=("Helvetica", 10))
+            name_label = Label(product_frame, text=product[1], width=20, borderwidth=1, relief="solid", bg="#f5f5f5",
+                               font=("Helvetica", 10))
             name_label.pack(side=LEFT, padx=10)
 
-            quantity_label = Label(product_frame, text=product.quantity, width=20, borderwidth=1, relief="solid",
+            quantity_label = Label(product_frame, text=product[2], width=20, borderwidth=1, relief="solid",
                                    bg="#f5f5f5", font=("Helvetica", 10))
             quantity_label.pack(side=LEFT, padx=10)
 
-            price_label = Label(product_frame, text=product.price, width=20, borderwidth=1, relief="solid",
-                                bg="#f5f5f5", font=("Helvetica", 10))
+            price_label = Label(product_frame, text=product[3], width=20, borderwidth=1, relief="solid", bg="#f5f5f5",
+                                font=("Helvetica", 10))
             price_label.pack(side=LEFT, padx=10)
 
     btn_display_warehouse = ttk.Button(admin_screen, text='Display Warehouse', command=display_warehouse)
@@ -153,14 +159,16 @@ def user_window():  # Окно пользователя
     user_screen.title("User Screen")
     user_screen.geometry("700x500")
     user_screen.configure(bg="#ffffff")
+    user_screen.resizable(False, False)
 
     def display_warehouse_client():
         warehouse_screen = Toplevel(user_screen)
         warehouse_screen.title("Warehouse")
         warehouse_screen.geometry("700x500")
         warehouse_screen.configure(bg="#ffffff")
+        warehouse_screen.resizable(False, False)
 
-        products = shop.warehouse.product_list
+        products = sql.get_product_from_warehouse()
 
         header_frame = ttk.Frame(warehouse_screen)
         header_frame.pack(pady=10)
@@ -181,27 +189,20 @@ def user_window():  # Окно пользователя
         products_frame.pack(pady=10)
 
         for i, product in enumerate(products):
-            name_product_basket = product.name_product
-            quantity_product_basket = product.quantity
-            price_product_basket = product.price
-
-            product_basket = shop.Product(name_product_basket, quantity_product_basket, price_product_basket)
-
-            name_label = Label(products_frame, text=product.name_product, width=20, height=2, borderwidth=1,
+            name_label = Label(products_frame, text=product[1], width=20, height=2, borderwidth=1,
                                relief="solid", bg="#f5f5f5", font=("Helvetica", 10))
             name_label.grid(row=i + 1, column=0, padx=5, pady=5)
 
-            quantity_label = Label(products_frame, text=product.quantity, width=20, height=2, borderwidth=1,
+            quantity_label = Label(products_frame, text=product[2], width=20, height=2, borderwidth=1,
                                    relief="solid", bg="#f5f5f5", font=("Helvetica", 10))
             quantity_label.grid(row=i + 1, column=1, padx=5, pady=5)
 
-            price_label = Label(products_frame, text=product.price, width=20, height=2, borderwidth=1, relief="solid",
+            price_label = Label(products_frame, text=product[3], width=20, height=2, borderwidth=1, relief="solid",
                                 bg="#f5f5f5", font=("Helvetica", 10))
             price_label.grid(row=i + 1, column=2, padx=5, pady=5)
 
             buy_button = ttk.Button(products_frame, text='BUY', width=6,
-                                    command=lambda prod=product_basket: shop.basket.add_product(prod))
-
+                                    command=lambda prod=product: sql.insert_product_basket(prod[1], 1, prod[3]))
             buy_button.grid(row=i + 1, column=3, padx=5, pady=5)
 
     btn_goods = ttk.Button(user_screen, text="Goods", command=display_warehouse_client)
@@ -212,8 +213,9 @@ def user_window():  # Окно пользователя
         basket_screen.title("Your Basket")
         basket_screen.geometry("700x500")
         basket_screen.configure(bg="#ffffff")
+        basket_screen.resizable(False, False)
 
-        products = shop.basket.basket_list
+        products = sql.get_product_from_basket()
 
         header_frame = ttk.Frame(basket_screen)
         header_frame.pack(pady=10)
@@ -235,25 +237,21 @@ def user_window():  # Окно пользователя
 
         for i, product in enumerate(products):  # Внимание
 
-            name_label = Label(products_frame, text=product.name_product, width=20, height=2, borderwidth=1,
+            name_label = Label(products_frame, text=product[1], width=20, height=2, borderwidth=1,
                                relief="solid", bg="#f5f5f5", font=("Helvetica", 10))
             name_label.grid(row=i + 1, column=0, padx=5, pady=5)
 
-            quantity_label = Label(products_frame, text=product.quantity, width=20, height=2, borderwidth=1,
+            quantity_label = Label(products_frame, text=product[2], width=20, height=2, borderwidth=1,
                                    relief="solid", bg="#f5f5f5", font=("Helvetica", 10))
             quantity_label.grid(row=i + 1, column=1, padx=5, pady=5)
 
-            price_label = Label(products_frame, text=product.price, width=20, height=2, borderwidth=1, relief="solid",
+            price_label = Label(products_frame, text=product[3], width=20, height=2, borderwidth=1, relief="solid",
                                 bg="#f5f5f5", font=("Helvetica", 10))
             price_label.grid(row=i + 1, column=2, padx=5, pady=5)
 
-            remove_button = ttk.Button(products_frame, text='REMOVE', width=8)
+            remove_button = ttk.Button(products_frame, text='REMOVE', width=8,
+                                       command=lambda prod=product: sql.delete_product_from_basket(product[0]))
             remove_button.grid(row=i + 1, column=3, padx=5, pady=5)
-
-        def remove_from_basket(product):
-            shop.basket.remove_product(product[0])
-            basket_screen.destroy()
-            show_user_basket()
 
     btn_basket = ttk.Button(user_screen, text="Basket", command=show_user_basket)
     btn_basket.pack(pady=20)

@@ -89,13 +89,13 @@ class Basket:
         else:
             print(f'Insufficient quantity of {product.name_product} in warehouse')
 
-    def delete_product(self, product_name):  # скорее всего косяк
-        for index, (product, quantity) in enumerate(self.basket_list):
-            if product.name_product == product_name:
-                product.quantity += quantity
+    def delete_product(self, prod):  # скорее всего косяк
+        for index, product in enumerate(self.basket_list):
+            if product.name_product == prod:
+                product.quantity += 1
                 del self.basket_list[index]
                 return
-        print(f"Product {product_name} not found in basket")
+        print(f"Product {prod} not found in basket")
 
     def display_basket(self):
         if len(self.basket_list) != 0:
