@@ -171,39 +171,46 @@ def user_window():  # Окно пользователя
         products = sql.get_product_from_warehouse()
 
         header_frame = ttk.Frame(warehouse_screen)
-        header_frame.pack(pady=10)
+        header_frame.pack(pady=10, fill=BOTH, expand=True)
 
         header_name = Label(header_frame, text="Product Name", width=20, borderwidth=1, relief="solid", bg="#d3d3d3",
                             font=("Helvetica", 10, "bold"))
-        header_name.grid(row=0, column=0, padx=5, pady=5)
+        header_name.grid(row=0, column=0, padx=17, pady=5, sticky='nsew')
 
         header_quantity = Label(header_frame, text="Quantity", width=20, borderwidth=1, relief="solid", bg="#d3d3d3",
                                 font=("Helvetica", 10, "bold"))
-        header_quantity.grid(row=0, column=1, padx=5, pady=5)
+        header_quantity.grid(row=0, column=1, padx=15, pady=5, sticky='nsew')
 
         header_price = Label(header_frame, text="Price", width=20, borderwidth=1, relief="solid", bg="#d3d3d3",
                              font=("Helvetica", 10, "bold"))
-        header_price.grid(row=0, column=2, padx=5, pady=5)
+        header_price.grid(row=0, column=2, padx=15, pady=5, sticky='nsew')
 
         products_frame = ttk.Frame(warehouse_screen)
-        products_frame.pack(pady=10)
+        products_frame.pack(pady=10, fill=BOTH, expand=True)
 
         for i, product in enumerate(products):
             name_label = Label(products_frame, text=product[1], width=20, height=2, borderwidth=1,
                                relief="solid", bg="#f5f5f5", font=("Helvetica", 10))
-            name_label.grid(row=i + 1, column=0, padx=5, pady=5)
+            name_label.grid(row=i + 1, column=0, padx=5, pady=5, sticky='nsew')
 
             quantity_label = Label(products_frame, text=product[2], width=20, height=2, borderwidth=1,
                                    relief="solid", bg="#f5f5f5", font=("Helvetica", 10))
-            quantity_label.grid(row=i + 1, column=1, padx=5, pady=5)
+            quantity_label.grid(row=i + 1, column=1, padx=5, pady=5, sticky='nsew')
 
             price_label = Label(products_frame, text=product[3], width=20, height=2, borderwidth=1, relief="solid",
                                 bg="#f5f5f5", font=("Helvetica", 10))
-            price_label.grid(row=i + 1, column=2, padx=5, pady=5)
+            price_label.grid(row=i + 1, column=2, padx=5, pady=5, sticky='nsew')
 
             buy_button = ttk.Button(products_frame, text='BUY', width=6,
-                                    command=lambda prod=product: sql.insert_product_basket(prod[1], 1, prod[3]))
-            buy_button.grid(row=i + 1, column=3, padx=5, pady=5)
+                                    command=lambda prod=product:
+                                    sql.insert_product_basket_and_update_warehouse(prod[1], prod[3]))
+            buy_button.grid(row=i + 1, column=3, padx=5, pady=5, sticky='nsew')
+
+        for col in range(4):
+            products_frame.grid_columnconfigure(col, weight=1)
+
+        for row in range(len(products) + 1):
+            products_frame.grid_rowconfigure(row, weight=0)
 
     btn_goods = ttk.Button(user_screen, text="Goods", command=display_warehouse_client)
     btn_goods.pack(pady=30)
@@ -218,40 +225,50 @@ def user_window():  # Окно пользователя
         products = sql.get_product_from_basket()
 
         header_frame = ttk.Frame(basket_screen)
-        header_frame.pack(pady=10)
+        header_frame.pack(pady=5, fill=X)
 
-        header_name = ttk.Label(header_frame, text="Product Name", width=20, style="TLabel")
-        header_name.grid(row=0, column=0, padx=5, pady=5)
+        # Настройка заголовков
+        header_name = ttk.Label(header_frame, text="Product Name", style="TLabel", borderwidth=1, relief="solid")
+        header_name.grid(row=0, column=0, padx=5, pady=2, sticky='nsew')
 
-        header_quantity = ttk.Label(header_frame, text="Quantity", width=20, style="TLabel")
-        header_quantity.grid(row=0, column=1, padx=5, pady=5)
+        header_quantity = ttk.Label(header_frame, text="Quantity", style="TLabel", borderwidth=1, relief="solid")
+        header_quantity.grid(row=0, column=1, padx=5, pady=2, sticky='nsew')
 
-        header_price = ttk.Label(header_frame, text="Price", width=20, style="TLabel")
-        header_price.grid(row=0, column=2, padx=5, pady=5)
+        header_price = ttk.Label(header_frame, text="Price", style="TLabel", borderwidth=1, relief="solid")
+        header_price.grid(row=0, column=2, padx=5, pady=2, sticky='nsew')
 
-        header_action = ttk.Label(header_frame, text="Action", width=10, style="TLabel")
-        header_action.grid(row=0, column=3, padx=5, pady=5)
+        header_action = ttk.Label(header_frame, text="Action", style="TLabel", borderwidth=1, relief="solid")
+        header_action.grid(row=0, column=3, padx=5, pady=2, sticky='nsew')
 
         products_frame = ttk.Frame(basket_screen)
-        products_frame.pack(pady=10)
+        products_frame.pack(pady=5, fill=BOTH, expand=True)
 
-        for i, product in enumerate(products):  # Внимание
+        # Добавляем продукты в корзину
+        for i, product in enumerate(products):
+            name_label = Label(products_frame, text=product[1], borderwidth=1,
+                               relief="solid", bg="#f5f5f5", font=("Helvetica", 10), width=20)
+            name_label.grid(row=i + 1, column=0, padx=5, pady=2, sticky='nsew')
 
-            name_label = Label(products_frame, text=product[1], width=20, height=2, borderwidth=1,
-                               relief="solid", bg="#f5f5f5", font=("Helvetica", 10))
-            name_label.grid(row=i + 1, column=0, padx=5, pady=5)
+            quantity_label = Label(products_frame, text=product[2], borderwidth=1,
+                                   relief="solid", bg="#f5f5f5", font=("Helvetica", 10), width=10)
+            quantity_label.grid(row=i + 1, column=1, padx=5, pady=2, sticky='nsew')
 
-            quantity_label = Label(products_frame, text=product[2], width=20, height=2, borderwidth=1,
-                                   relief="solid", bg="#f5f5f5", font=("Helvetica", 10))
-            quantity_label.grid(row=i + 1, column=1, padx=5, pady=5)
-
-            price_label = Label(products_frame, text=product[3], width=20, height=2, borderwidth=1, relief="solid",
-                                bg="#f5f5f5", font=("Helvetica", 10))
-            price_label.grid(row=i + 1, column=2, padx=5, pady=5)
+            price_label = Label(products_frame, text=product[3], borderwidth=1, relief="solid",
+                                bg="#f5f5f5", font=("Helvetica", 10), width=10)
+            price_label.grid(row=i + 1, column=2, padx=5, pady=2, sticky='nsew')
 
             remove_button = ttk.Button(products_frame, text='REMOVE', width=8,
-                                       command=lambda prod=product: sql.delete_product_from_basket(product[0]))
-            remove_button.grid(row=i + 1, column=3, padx=5, pady=5)
+                                       command=lambda prod=product: sql.delete_product_from_basket(product[1]))
+            remove_button.grid(row=i + 1, column=3, padx=5, pady=2, sticky='nsew')
+
+        # Настройка весов колонок и строк для растяжения
+        for col in range(4):
+            header_frame.grid_columnconfigure(col, weight=1)
+            products_frame.grid_columnconfigure(col, weight=1)
+
+        # Убираем растяжение строк
+        for row in range(len(products) + 1):
+            products_frame.grid_rowconfigure(row, weight=0)
 
     btn_basket = ttk.Button(user_screen, text="Basket", command=show_user_basket)
     btn_basket.pack(pady=20)
